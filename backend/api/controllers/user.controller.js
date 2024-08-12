@@ -1,7 +1,7 @@
 import {connection} from "../../index.js"
 import asyncWrapper from "../../utils/asyncWrapper.js"
 import {ApiResponse, ApiError, encrypt, decrypt, generateToken} from "../../utils/utils.js"
-import {userTable, cookieOptions} from "../../constants.js"
+import {userTable, cookieOptions, accessTokenExpiry} from "../../constants.js"
 
 export const signup = asyncWrapper(async (req,res)=>{
     const {username,password} = req.body
@@ -25,6 +25,29 @@ export const signup = asyncWrapper(async (req,res)=>{
             message: "User registered successfully"
         })
     )
+})
+
+export const loginState = asyncWrapper((req,res)=>{
+    if (req.cookies.access_token){
+        res
+        .status(200)
+        .json(
+            new ApiResponse({
+                statusCode: 200,
+                data: {accessToken: req.cookies.access_token}
+            })
+        )
+    }
+    else{
+        res
+        .status(200)
+        .json(
+            new ApiResponse({
+                statusCode: 200,
+                message: "User not logged in"
+            })
+        )
+    }
 })
 
 export const login = asyncWrapper(async (req,res)=>{

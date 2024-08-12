@@ -2,6 +2,27 @@ import {connection} from "../../index.js"
 import {asyncWrapper,ApiResponse,ApiError} from "../../utils/utils.js"
 import {cardTable} from "../../constants.js"
 
+export const fetchCards = asyncWrapper(async (req,res)=>{
+    const result = await connection.query(`
+        SELECT *
+        FROM ${cardTable};
+    `)
+    if (!result){
+        throw new ApiError({
+            message: "Unable to fetch cards",
+            statusCode: 500
+        })
+    }
+    res
+    .status(200)
+    .json(
+        new ApiResponse({
+            statusCode: 200,
+            data: result[0]
+        })
+    )
+})
+
 export const addCard = asyncWrapper(async (req, res) => {
     const {term, definition} = req.body
     const result = await connection.query(`
@@ -28,8 +49,9 @@ export const addCard = asyncWrapper(async (req, res) => {
 export const updateCard = asyncWrapper(async (req, res) => {
     const {id, term, definition} = req.body
     const result = await connection.query(`
-        UPDATE ${cardTable} SET term = "${term}", definition = "${definition}"
-        WHERE id = ${id};
+        UPDATE ${cardTable}
+        SET term = "${term}", definition = "${definition}"
+        WHERE id = "${id}";
     `)
     if (!result){
         throw new ApiError({
@@ -50,7 +72,8 @@ export const updateCard = asyncWrapper(async (req, res) => {
 export const deleteCard = asyncWrapper(async (req, res) => {
     const {id} = req.body
     const result = await connection.query(`
-        DELETE FROM ${cardTable} WHERE id = ${id};
+        DELETE FROM ${cardTable}
+        WHERE id = "${id}";
     `)
     if (!result){
         throw new ApiError({
