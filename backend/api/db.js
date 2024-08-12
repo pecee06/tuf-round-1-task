@@ -1,5 +1,5 @@
 import mysql from 'mysql2'
-import {tableName, user, hostName, database} from "./constants.js"
+import {cardTable, userTable, user, hostName, database} from "../constants.js"
 
 async function connect() {
     const connObj = {
@@ -12,8 +12,16 @@ async function connect() {
     try {
         const pool = mysql.createPool(connObj).promise()
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS ${tableName} (
-                id INT AUTO_INCREMENT,
+            CREATE TABLE IF NOT EXISTS ${userTable} (
+                username VARCHAR(25),
+                password TEXT,
+                refresh_token TEXT,
+                PRIMARY KEY (username)
+            );
+        `)
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS ${cardTable} (
+                id INT,
                 term varchar(20) NOT NULL,
                 definition TEXT,
                 PRIMARY KEY (id)

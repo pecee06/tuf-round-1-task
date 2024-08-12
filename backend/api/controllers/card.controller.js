@@ -1,20 +1,18 @@
-import {connection} from "./index.js"
-import asyncWrapper from "./utils/asyncWrapper.js"
-import ApiResponse from "./utils/ApiResponse.js"
-import ApiError from "./utils/ApiError.js"
-import {tableName} from "./constants.js"
+import {connection} from "../../index.js"
+import {asyncWrapper,ApiResponse,ApiError} from "../../utils/utils.js"
+import {cardTable} from "../../constants.js"
 
 export const addCard = asyncWrapper(async (req, res) => {
     const {term, definition} = req.body
     const result = await connection.query(`
-        INSERT INTO ${tableName} (term,definition) VALUES(
-            "${term}","${definition}"
+        INSERT INTO ${cardTable} VALUES(
+            "${Math.ceil(Math.random()*1e7)}","${term}","${definition}"
         );
     `)
     if (!result){
         throw new ApiError({
             message: "Unable to add card",
-            statusCode: 400
+            statusCode: 500
         })
     }
     res
@@ -30,13 +28,13 @@ export const addCard = asyncWrapper(async (req, res) => {
 export const updateCard = asyncWrapper(async (req, res) => {
     const {id, term, definition} = req.body
     const result = await connection.query(`
-        UPDATE ${tableName} SET term = "${term}", definition = "${definition}"
+        UPDATE ${cardTable} SET term = "${term}", definition = "${definition}"
         WHERE id = ${id};
     `)
     if (!result){
         throw new ApiError({
             message: "Unable to update card",
-            statusCode: 400
+            statusCode: 500
         })
     }
     res
@@ -52,12 +50,12 @@ export const updateCard = asyncWrapper(async (req, res) => {
 export const deleteCard = asyncWrapper(async (req, res) => {
     const {id} = req.body
     const result = await connection.query(`
-        DELETE FROM ${tableName} WHERE id = ${id};
+        DELETE FROM ${cardTable} WHERE id = ${id};
     `)
     if (!result){
         throw new ApiError({
             message: "Unable to delete card",
-            statusCode: 400
+            statusCode: 500
         })
     }
     res
